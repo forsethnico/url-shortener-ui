@@ -71,14 +71,14 @@ describe("Url Shortener Main Page", () => {
     cy.contains("p", "https://unsplash.com/photos/NflJmUuaYVI");
   });
 
-  it('should display an error message when user tries to submit the form with empty fields', () => {
+  it("should display an error message when user tries to submit the form with empty fields", () => {
     cy.get("form").get('input[name="title"]').type("Denver skyline");
     cy.get("form")
       .get('input[name="title"]')
       .should("have.value", "Denver skyline");
-    cy.intercept("POST", "http://localhost:3001/api/v1/urls", 
-      { message: 'Please fill out all fields'}
-    );
+    cy.intercept("POST", "http://localhost:3001/api/v1/urls", {
+      message: "Please fill out all fields",
+    });
     cy.get("button").click();
     cy.contains("p", "Please fill out all fields");
   });
