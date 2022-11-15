@@ -22,6 +22,7 @@ export class App extends Component {
   addUrl = (newUrl) => {
     postUrl(newUrl)
     .then(result => {
+      console.log(result)
       if(result.id) {
         this.setState({urls: [...this.state.urls, result], error: ''})
       } else {
@@ -35,7 +36,7 @@ export class App extends Component {
       <main className="App">
         <header>
           <h1>URL Shortener</h1>
-          <UrlForm />
+          <UrlForm addUrl = {this.addUrl}/>
         </header>
         <UrlContainer urls={this.state.urls}/>
       </main>
