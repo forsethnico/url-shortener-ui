@@ -1,39 +1,73 @@
 describe("Url Shortener Main Page", () => {
   beforeEach(() => {
-    cy.intercept("GET","http://localhost:3001/api/v1/urls", {
-      urls:[ 
-        {
-          id: 1,
-          long_url:
-            "https://images.unsplash.com/photo-1531898418865-480b7090470f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80",
-          short_url: "http://localhost:3001/useshorturl/1",
-          title: "Awesome photo",
-        },
-      ]
+    cy.intercept("GET", "http://localhost:3001/api/v1/urls", {
+      body: {
+        urls: [
+          {
+            id: 1,
+            long_url:
+              "https://images.unsplash.com/photo-1531898418865-480b7090470f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80",
+            short_url: "http://localhost:3001/useshorturl/1",
+            title: "Awesome photo",
+          },
+        ],
+      },
     });
     cy.visit("http://localhost:3000/");
   });
 
-  it("should render a header for URL Shortener web page", () => {
+  it("should render a title and existing shortened URLs to the page", () => {
     cy.contains("h1", "URL Shortener");
+    cy.contains("h3", "Awesome photo");
+    cy.contains("a", "http://localhost:3001/useshorturl/1");
+    cy.contains(
+      "p",
+      "https://images.unsplash.com/photo-1531898418865-480b7090470f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80"
+    );
   });
 
-  it('should render existing shortened urls to the page', () => {
-    cy.get('.url').contains('h3', 'Awesome Photo')
-    cy.get('.url').contains('a', 'http://localhost:3001/useshorturl/1')
-    cy.get('.url').contains('p', 'https://images.unsplash.com/photo-1531898418865-480b7090470f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80')
-  })
-
-  it("should render a form with title, url to shorten fields, and submit shorten button", () => {
-    cy.get("form").get('input[name="title"]')
-    cy.get("form").get('input[name="urlToShorten"]')
-    cy.get("form").contains('button', 'Shorten Please!')
+  it("should render a form with title, url to shorten fields, and submit shorten url button", () => {
+    cy.get("form").get('input[name="title"]');
+    cy.get("form").get('input[name="urlToShorten"]');
+    cy.get("form").contains("button", "Shorten Please!");
   });
 
   it("should update the information in the input fields when user fills out form", () => {
-    cy.get("form").get('input[name="title"]').type("Banana photo");
-    cy.get("form").get('input[name="title"]').should("have.value", "Banana photo");
-    // cy.get("form").get('input[name]="urlToShorten"]').type("");
-    cy.get("form").get('input[name="urlToShorten"]').should("have.value", "Awesome photo");
+    cy.get("form").get('input[name="title"]').type("Denver skyline");
+    cy.get("form")
+      .get('input[name="title"]')
+      .should("have.value", "Denver skyline");
+    cy.get("form")
+      .get('input[name="urlToShorten"]')
+      .type("https://unsplash.com/photos/NflJmUuaYVI");
+    cy.get("form")
+      .get('input[name="urlToShorten"]')
+      .should("have.value", "https://unsplash.com/photos/NflJmUuaYVI");
+  });
+
+  it("should render a new shortened URL when user fills out and submits form", () => {
+    cy.get("form").get('input[name="title"]').type("Denver skyline");
+    cy.get("form")
+      .get('input[name="title"]')
+      .should("have.value", "Denver skyline");
+    cy.get("form")
+      .get('input[name="urlToShorten"]')
+      .type("https://unsplash.com/photos/NflJmUuaYVI");
+    cy.get("form")
+      .get('input[name="urlToShorten"]')
+      .should("have.value", "https://unsplash.com/photos/NflJmUuaYVI");
+    cy.intercept("POST", "http://localhost:3001/api/v1/urls", {
+      statusCode: 201,
+      body: {
+        id: 2,
+        long_url: "https://unsplash.com/photos/NflJmUuaYVI",
+        short_url: "http://localhost:3001/useshorturl/2",
+        title: "Denver skyline",
+      },
+    });
+    cy.get("button").click();
+    cy.contains("h3", "Denver skyline");
+    cy.contains("a", "http://localhost:3001/useshorturl/2");
+    cy.contains("p", "https://unsplash.com/photos/NflJmUuaYVI");
   });
 });
