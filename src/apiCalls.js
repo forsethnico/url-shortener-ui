@@ -11,7 +11,7 @@ export const postUrl = (newUrl) => {
   })
   .then(response => {
     if(!response.ok) {
-      throw Error(response.status + ":" + response.statusText)
+      throw Error(response.message)
     } else {
       return response.json()
     }
