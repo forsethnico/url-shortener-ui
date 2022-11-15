@@ -8,11 +8,15 @@ export class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      urls: []
+      urls: [],
+      error: ''
     }
   }
 
   componentDidMount() {
+    getUrls()
+    .then(data => this.setState({urls: data.urls}))
+    .catch(error => this.setState({error: 'Something went wrong'}))
   }
 
   render() {
